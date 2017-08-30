@@ -65,7 +65,7 @@ In the next sections we are going to deploy a ASP.NET  MVC application and a web
 1. `git clone https://github.com/MarcialRosales/dot-net-pcf-workshops.git`
 2. `cd dot-net-pcf-workshops`
 
-## <a name="deploy-dot-net-app"></a> Deploy a ASP.NET MVC app
+## <a name="deploy-dot-net-app"></a> Lab 1 - Deploy a ASP.NET MVC app
 We have created an application was created using the out of the box ASP.NET MVC template with Web API. We have customized the html layout of the generated app.
 This application is under `skeleton/FlightAvailability` folder.
 
@@ -102,11 +102,6 @@ Lets go to the browser and check our application. Which is the URL?
 > NOTE: (From GSS playbook) PCF 1.10: .NET apps must use the HWC buildpack or a custom buildpack that offers the same functionality; standalone/executable apps must use the binary buildpack with a start command
 
 
-### Add global error handler
-
-Before we deploy our application we are going to add a global error (added to `Global.asax.cs` file) handler otherwise should the application failed to start we would not know why.
-
-
 ### About Web.Config
 
 Most application Web.configs work out of the box with PCF, however here are a couple of things to watch out for.
@@ -114,3 +109,39 @@ Most application Web.configs work out of the box with PCF, however here are a co
 - Don’t use Windows integrated auth, it’s been disabled in PCF.
 - Don’t use HTTP modules that don’t ship with .NET or can’t be deployed in your app’s bin directory, for example the [Micorsoft URL Rewrite module](https://www.iis.net/downloads/microsoft/url-rewrite).
 - SQL Server connection strings must use fully qualified domain names.
+
+
+## <a name="quick-intro-buildpack"></a> Quick Introduction to Buildpacks
+
+We have pushed two applications, a .Net Core and a static web site. We know that for the .Net Core we need a .Net Core Runtime and to run the static web site we need a web server like Apache or Nginx.
+
+From [.Net buildpack](https://docs.cloudfoundry.org/buildpacks/dotnet-core/index.html#pushing-apps) ...
+> Cloud Foundry automatically uses the .NET Core buildpack when one or more of the following conditions are met:
+
+>- The pushed app contains one or more &ast;.csproj or &ast;.fsproj files.
+>- The pushed app contains one or more project.json files.
+>- The app is pushed from the output directory of the dotnet publish command.
+
+> If your app requires external shared libraries that are not provided by the rootfs or the buildpack, you must place the libraries in an ld_library_path directory at the app root.
+
+From [Static buildpack](https://docs.cloudfoundry.org/buildpacks/staticfile/#staticfile) ...
+> Cloud Foundry requires a file named Staticfile in the root directory of the app to use the Staticfile buildpack with the app.
+
+## <a name="deploy-dot-net-app"></a> Lab 2 - Load flights from in-memory database
+
+We create a new project `load-flights-from-in-memory-db/FlightAvailability` starting with the content of our previous project: `skeleton/FlightAvailability`.
+
+This time we are adding a `FlightController` class that returns a collection of dummy `Flight`(s).
+
+To deploy it:
+1. **Publish** to a folder using Visual Studio
+2. Go to the publish folder
+3. Run
+  `cf push dotnet-FlightAvailability -s windows2012R2 -b hwc_buildpack`
+4. Test it with `curl` or *Postman*:
+  `curl 'dotnet-flightavailability.cfapps.pez.pivotal.io/api?origin=MAD&destination=FRA' | jq .`
+
+
+### Add global error handler
+
+Our application should have a global error (added to `Global.asax.cs` file) handler otherwise should the application failed to start we would not know why.
