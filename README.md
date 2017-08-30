@@ -1,4 +1,4 @@
-PCF .Net Core Developers workshop
+PCF ASP.NET Developers workshop
 ==
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -6,7 +6,7 @@ PCF .Net Core Developers workshop
 - [Introduction](#Introduction)
 - [Pivotal Cloud Foundry Technical Overview](#pivotal-cloud-foundry-technical-overview)
 - [Deploying simple apps](#deploying-simple-apps)
-  - [Lab - Deploy .Net Core app](#deploy-dot-net-app)
+  - [Lab - Deploy ASP.NET app](#deploy-dot-net-app)
   - [Lab - Deploy web site](#deploy-web-site)
   - [Quick Introduction to Buildpacks](#quick-intro-buildpack)
   - [Deploying applications with application manifest](#deploying-applications-with-application-manifest)
@@ -52,7 +52,7 @@ Reference documentation:
 
 # Deploying simple apps
 
-CloudFoundry excels at the developer experience: deploy, update and scale applications on-demand regardless of the application stack (java, php, node.js, go, etc).  We are going to learn how to deploy 4 types of applications: .Net Core app and static web pages.
+CloudFoundry excels at the developer experience: deploy, update and scale applications on-demand regardless of the application stack (java, php, node.js, go, etc).  We are going to learn how to deploy 4 types of applications: .Net app and static web pages.
 
 Reference documentation:
 - [Using Apps Manager](http://docs.pivotal.io/pivotalcf/1-9/console/index.html)
@@ -60,7 +60,7 @@ Reference documentation:
 - [Deploying Applications](http://docs.pivotal.io/pivotalcf/1-9/devguide/deploy-apps/deploy-app.html)
 - [Deploying with manifests](http://docs.pivotal.io/pivotalcf/1-9/devguide/deploy-apps/manifest.html)
 
-In the next sections we are going to deploy a ASP.NET Core MVC application and a web site. Before we proceed with the next sections we are going to checkout the following repository which has the .Net projects we are about to deploy.
+In the next sections we are going to deploy a ASP.NET  MVC application and a web site. Before we proceed with the next sections we are going to checkout the following repository which has the .Net projects we are about to deploy.
 
 1. `git clone https://github.com/MarcialRosales/dot-net-pcf-workshops.git`
 2. `cd dot-net-pcf-workshops`
