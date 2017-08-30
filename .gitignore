@@ -1,0 +1,8 @@
+bin/
+.vscode/
+.vs/
+obj/
+*/obj/
+publish/
+packages/
+App_Data/
