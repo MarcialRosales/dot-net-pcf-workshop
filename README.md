@@ -65,7 +65,7 @@ In the next sections we are going to deploy a ASP.NET  MVC application and a web
 1. `git clone https://github.com/MarcialRosales/dot-net-pcf-workshops.git`
 2. `cd dot-net-pcf-workshops`
 
-## <a name="deploy-dot-net-app"></a> Lab 1 - Deploy a ASP.NET MVC app
+## <a name="lab1"></a> Lab 1 - Deploy a ASP.NET MVC app
 We have created an application was created using the out of the box ASP.NET MVC template with Web API. We have customized the html layout of the generated app.
 This application is under `skeleton/FlightAvailability` folder.
 
@@ -111,11 +111,13 @@ Most application Web.configs work out of the box with PCF, however here are a co
 - SQL Server connection strings must use fully qualified domain names.
 
 
-## <a name="deploy-dot-net-app"></a> Lab 2 - Retrieve flights thru REST endpoint
+## <a name="lab2"></a> Lab 2 - Retrieve flights thru a REST endpoint
 
 We create a new project `load-flights-from-in-memory-db/FlightAvailability` starting with the content of our previous project: `skeleton/FlightAvailability`.
 
-This time we are adding a `FlightController` class that returns a collection of dummy `Flight`(s).
+To add a REST endpoint:
+1. Add a `FlightController` class that returns a collection of dummy `Flight`(s) to the `Controllers` namespace.
+2. Add a `Flight` class to the `Models` namespace.
 
 To deploy it:
 1. **Publish** to a folder using Visual Studio
@@ -138,7 +140,7 @@ void Application_Error(object sender, EventArgs e)
  }
 ```
 
-## <a name="deploy-web-site"></a> Deploy a static web site
+## <a name="lab3"></a> Lab 3 - Deploy a static web site
 Deploy static site associated to the flight availability and make it internally available on a given private domain.
 The static site corresponds to the API documentation of our flight-availability application. It is found under `load-flights-from-in-memory-db/flight-availability-doc` folder.  
 
@@ -173,7 +175,7 @@ From [Static buildpack](https://docs.cloudfoundry.org/buildpacks/staticfile/#sta
 
 Rather than passing a potentially long list of parameters to `cf push` we are going to move those parameters to a file so that we don't need to type them everytime we want to push an application. This file is called  *Application Manifest*.
 
-The equivalent *manifest* file for the command `cf push flight-availability -p  publish -i 2 --hostname fa` is:
+The equivalent *manifest* file for the command `cf push flight-availability -p publish -i 2 --hostname fa` is:
 
 ```
 ---
@@ -206,3 +208,109 @@ We have seen how we can scale our application (`cf scale -i #` or `cf push  ... 
 Let's try to simulate our application crashed. To do so go to the home page and click on the link `KillApp`.
 
 If we have +1 instances, we have zero-downtime because the other instances are available to receive requests while PCF creates a new one. If we had just one instance, we have downtime of a few seconds until PCF provisions another instance.
+
+
+## <a name="deploy-dot-net-app"></a> Lab 4 - Retrieve flights thru a REST endpoint from a in-memory db
+
+We are going to load the `Flight` entity using Entity Framework 6 and we are going to manage the schema using *Migrations*.
+
+1. Add Entity Framework
+  `Install-Package EntityFramework`
+2. Add `FlightContext`, `FlightRepository` and `IFlightRepository` classes
+3. We want to manage the schema thru *Migrations* therefore we are going to enable it. From the *Package Manager Console* we run the following command. It produces a new folder `Migrations` with a `Configuration` class with a `Seed` method that we use to populate the schema with data.
+  `Enable-Migrations`
+4. We add the logic that automatically creates the database schema and applies schema upgrades. We add it to the class `WebApiConfig.cs` although it should be on a dedicated class. We call this method from the `Register` method.
+  if there are schema changes to apply, we should see in the logs `Running migrations against database` else `There no database schema changes`.
+
+  ```
+      private static void InitializeDataStore()
+      {
+          System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<FlightAvailability.Models.FlightContext,
+              FlightAvailability.Migrations.Configuration>());
+
+          var configuration = new FlightAvailability.Migrations.Configuration();
+          var migrator = new System.Data.Entity.Migrations.DbMigrator(configuration);
+          if (migrator.GetPendingMigrations().Any())
+          {
+              System.Diagnostics.Debug.WriteLine("Running migrations against database");
+              migrator.Update();
+          }else
+          {
+              System.Diagnostics.Debug.WriteLine("There no database schema changes");
+          }
+      }
+    ```
+5. We instruct *Migrations* to generate the *code* that produces the schema corresponding to the current model. *Migrations* will produce a class called `InitialFlightTable` to the `Migrations` namespace.
+  `add-migration InitialFlightTable`
+
+6. We populate the table with some data thru the `Configuration.cs` class.
+  ```
+     protected override void Seed(FlightAvailability.Models.FlightContext context)
+     {
+
+         if (!context.Flight.Any())
+         {
+             InitialFlights().ForEach(f => context.Flight.Add(f));
+
+         }
+
+     }
+     private List<Flight> InitialFlights()
+     {
+         var flights = new List<Flight>
+         {
+             new Flight{Origin="MAD",Destination="GTW",Date="18Apr2017"},
+             new Flight{Origin="MAD",Destination="FRA",Date="18Apr2017"},
+             new Flight{Origin="MAD",Destination="LHR",Date="18Apr2017"},
+             new Flight{Origin="MAD",Destination="ACE",Date="18Apr2017"},
+             new Flight{Origin="MAD",Destination="GTW",Date="19Apr2017"},
+             new Flight{Origin="MAD",Destination="FRA",Date="19Apr2017"},
+             new Flight{Origin="MAD",Destination="LHR",Date="19Apr2017"},
+             new Flight{Origin="MAD",Destination="ACE",Date="19Apr2017"}
+         };
+         return flights;
+     }
+  ```
+
+We could run the application as it stands now. It would create the schema but that's it because the controller is still returning dummy data.
+
+We need to modify it so that it uses an instance of `IFlightRepository`. We are going to use *Unity* DI container to register services like `FlightRepository` and others and inject them to the `Controller` classes.
+
+1. We add the package to use *Unity* DI container
+  `Install-Package Unity`
+2. We modify the `FlightController` so that we inject a `IFlightRepository` thru the constructor and use it to find flights.
+  ```
+  [Route("api")]
+   public class FlightController : ApiController
+   {
+
+       private IFlightRepository _flightService;
+
+       public FlightController(IFlightRepository flightService)
+       {
+           this._flightService = flightService;
+       }
+
+       [HttpGet]
+       public async Task<List<Flight>> find([FromUri, Required] string origin, [FromUri, Required] string destination)
+       {
+           System.Diagnostics.Debug.WriteLine($"Find {origin}/{destination}");
+           return await _flightService.findByOriginAndDestination(origin, destination);
+
+
+       }
+   }
+ ```
+3. Now, we need to set up the DI container in the `WebApiConfig.cs` class. And we also register our `FightRepository` implementation.
+  ```
+  private static void InitializeDI(HttpConfiguration config)
+       {
+           var container = new UnityContainer();
+           container.RegisterType<IFlightRepository, FlightRepository>();
+
+           // Configure .Net MVC to use UnitContainer to resolve dependencies when creating Controller classes
+           config.DependencyResolver = new UnityResolver(container);
+       }
+  ```
+
+We are now ready to test it. Run it locally from Visual Studio and run visit the following url in the browser: `http://localhost:52025/api?origin=MAD&destination=FRA`.  We should get back 2 fights.

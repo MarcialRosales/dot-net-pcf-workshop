@@ -12,28 +12,20 @@ namespace FlightAvailability.Controllers
     public class FlightController : ApiController
     {
 
-        public FlightController()
+        private IFlightRepository _flightService;
+
+        public FlightController(IFlightRepository flightService)
         {
+            this._flightService = flightService;
         }
 
         [HttpGet]
         public async Task<List<Flight>> find([FromUri, Required] string origin, [FromUri, Required] string destination)
         {
             System.Diagnostics.Debug.WriteLine($"Find {origin}/{destination}");
-            return InitialFlights();
+            return await _flightService.findByOriginAndDestination(origin, destination);
 
 
-        }
-        private List<Flight> InitialFlights()
-        {
-            var flights = new List<Flight>
-            {
-                new Flight{Origin="MAD",Destination="GTW"},
-                new Flight{Origin="MAD",Destination="FRA"},
-                new Flight{Origin="MAD",Destination="LHR"},
-                new Flight{Origin="MAD",Destination="ACE"}
-            };
-            return flights;
         }
     }
 
