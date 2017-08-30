@@ -111,23 +111,7 @@ Most application Web.configs work out of the box with PCF, however here are a co
 - SQL Server connection strings must use fully qualified domain names.
 
 
-## <a name="quick-intro-buildpack"></a> Quick Introduction to Buildpacks
-
-We have pushed two applications, a .Net Core and a static web site. We know that for the .Net Core we need a .Net Core Runtime and to run the static web site we need a web server like Apache or Nginx.
-
-From [.Net buildpack](https://docs.cloudfoundry.org/buildpacks/dotnet-core/index.html#pushing-apps) ...
-> Cloud Foundry automatically uses the .NET Core buildpack when one or more of the following conditions are met:
-
->- The pushed app contains one or more &ast;.csproj or &ast;.fsproj files.
->- The pushed app contains one or more project.json files.
->- The app is pushed from the output directory of the dotnet publish command.
-
-> If your app requires external shared libraries that are not provided by the rootfs or the buildpack, you must place the libraries in an ld_library_path directory at the app root.
-
-From [Static buildpack](https://docs.cloudfoundry.org/buildpacks/staticfile/#staticfile) ...
-> Cloud Foundry requires a file named Staticfile in the root directory of the app to use the Staticfile buildpack with the app.
-
-## <a name="deploy-dot-net-app"></a> Lab 2 - Load flights from in-memory database
+## <a name="deploy-dot-net-app"></a> Lab 2 - Retrieve flights thru REST endpoint
 
 We create a new project `load-flights-from-in-memory-db/FlightAvailability` starting with the content of our previous project: `skeleton/FlightAvailability`.
 
@@ -145,3 +129,80 @@ To deploy it:
 ### Add global error handler
 
 Our application should have a global error (added to `Global.asax.cs` file) handler otherwise should the application failed to start we would not know why.
+
+```
+void Application_Error(object sender, EventArgs e)
+ {
+     Exception lastError = Server.GetLastError();
+     Console.WriteLine("Unhandled exception: " + lastError.Message + lastError.StackTrace);
+ }
+```
+
+## <a name="deploy-web-site"></a> Deploy a static web site
+Deploy static site associated to the flight availability and make it internally available on a given private domain.
+The static site corresponds to the API documentation of our flight-availability application. It is found under `load-flights-from-in-memory-db/flight-availability-doc` folder.  
+
+> Note: We generated this api doc using [ReDoc](https://github.com/Rebilly/ReDoc) from a Swagger definition that we have downloaded from the .Net core version of our flight-availability found in another [repo](https://github.com/MarcialRosales/dot-net-core-pcf-workshop/tree/master/load-flights-from-in-memory-db/flight-availability-api-doc). Check this [section](https://github.com/MarcialRosales/dot-net-core-pcf-workshop#-deploy-a-web-site) to know how it was generated.
+
+1. Assuming you are under `load-flights-from-in-memory-db`
+2. Deploy the app  
+  `cf push flight-availability-api -p FlightAvailability-Doc --random-route`  
+3. Check out application's details, whats the url?  
+  `cf app flight-availability-api`  
+4. How did PCF know that this was a static site and not a .Net application?
+
+
+## <a name="quick-intro-buildpack"></a> Quick Introduction to Buildpacks
+
+We have pushed two applications, a .Net Core and a static web site. We know that for the .Net Core we need a .Net Core Runtime and to run the static web site we need a web server like Apache or Nginx.
+
+From [.Net buildpack](https://docs.cloudfoundry.org/buildpacks/dotnet-core/index.html#pushing-apps) ...
+> Cloud Foundry automatically uses the .NET Core buildpack when one or more of the following conditions are met:
+
+>- The pushed app contains one or more &ast;.csproj or &ast;.fsproj files.
+>- The pushed app contains one or more project.json files.
+>- The app is pushed from the output directory of the dotnet publish command.
+
+> If your app requires external shared libraries that are not provided by the rootfs or the buildpack, you must place the libraries in an ld_library_path directory at the app root.
+
+From [Static buildpack](https://docs.cloudfoundry.org/buildpacks/staticfile/#staticfile) ...
+> Cloud Foundry requires a file named Staticfile in the root directory of the app to use the Staticfile buildpack with the app.
+
+
+## Deploying applications with application manifest
+
+Rather than passing a potentially long list of parameters to `cf push` we are going to move those parameters to a file so that we don't need to type them everytime we want to push an application. This file is called  *Application Manifest*.
+
+The equivalent *manifest* file for the command `cf push flight-availability -p  publish -i 2 --hostname fa` is:
+
+```
+---
+applications:
+- name: flight-availability
+  instances: 2
+  path: publish
+  host: fa
+```
+
+
+*Things we can do with the manifest.yml file* (more details [here](http://docs.pivotal.io/pivotalcf/1-9/devguide/deploy-apps/manifest.html))
+- [ ] simplify push command with manifest files (`-f <manifest>`, `-no-manifest`)
+- [ ] register applications with DNS (`domain`, `domains`, `host`, `hosts`, `no-hostname`, `random-route`, `routes`). We can register http and tcp endpoints.
+- [ ] deploy applications without registering with DNS (`no-route`) (for instance, a messaging based server which does not listen on any port)
+- [ ] specify compute resources : memory size, disk size and number of instances!! (Use manifest to store the 'default' number of instances ) (`instances`, `disk_quota`, `memory`)
+- [ ] specify environment variables the application needs (`env`)
+- [ ] as far as CloudFoundry is concerned, it is important that application start (and shutdown) quickly. If we are application is too slow we can adjust the timeouts CloudFoundry uses before it deems an application as failed and it restarts it:
+	- `timeout` (60sec) Time (in seconds) allowed to elapse between starting up an app and the first healthy response from the app
+	- `env: CF_STAGING_TIMEOUT` (15min) Max wait time for buildpack staging, in minutes
+	- `env: CF_STARTUP_TIMEOUT` (5min) Max wait time for app instance startup, in minutes
+- [ ] CloudFoundry is able to determine the health status of an application and restart if it is not healthy. We can tell it not to check or to checking the port (80) is opened or whether the http endpoint returns a `200 OK` (`health-check-http-endpoint`, `health-check-type`)
+- [ ] CloudFoundry builds images from our applications. It uses a set of scripts to build images called buildpacks. There are buildpacks for different type of applications. CloudFoundry will automatically detect the type of application however we can tell CloudFoundry which buildpack we want to use. (`buildpack`)
+- [ ] specify services the application needs (`services`)
+
+## Platform guarantees
+
+We have seen how we can scale our application (`cf scale -i #` or `cf push  ... -i #`). When we specify the number of instances, we create implicitly creating a contract with the platform. The platform will try its best to guarantee that the application has those instances. Ultimately the platform depends on the underlying infrastructure to provision new instances should some of them failed. If the infrastructure is not ready available, the platform wont be able to comply with the contract. Besides this edge case, the platform takes care of our application availability.
+
+Let's try to simulate our application crashed. To do so go to the home page and click on the link `KillApp`.
+
+If we have +1 instances, we have zero-downtime because the other instances are available to receive requests while PCF creates a new one. If we had just one instance, we have downtime of a few seconds until PCF provisions another instance.
