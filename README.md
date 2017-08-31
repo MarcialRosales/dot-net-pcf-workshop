@@ -277,7 +277,7 @@ We could run the application as it stands now. It would create the schema but th
 We need to modify it so that it uses an instance of `IFlightRepository`. We are going to use *Unity* DI container to register services like `FlightRepository` and others and inject them to the `Controller` classes.
 
 1. We add the package to use *Unity* DI container
-  `Install-Package Unity`
+  `Install-Package Unity.WebAPI`
 2. We modify the `FlightController` so that we inject a `IFlightRepository` thru the constructor and use it to find flights.
   ```
   [Route("api")]
@@ -301,16 +301,38 @@ We need to modify it so that it uses an instance of `IFlightRepository`. We are 
        }
    }
  ```
-3. Now, we need to set up the DI container in the `WebApiConfig.cs` class. And we also register our `FightRepository` implementation.
+3. Now, we need to set up the DI container in the `Global.asax.cs` class.
   ```
-  private static void InitializeDI(HttpConfiguration config)
+  protected void Application_Start()
        {
-           var container = new UnityContainer();
-           container.RegisterType<IFlightRepository, FlightRepository>();
+           AreaRegistration.RegisterAllAreas();
+           UnityConfig.RegisterComponents();
 
-           // Configure .Net MVC to use UnitContainer to resolve dependencies when creating Controller classes
-           config.DependencyResolver = new UnityResolver(container);
+           ...
        }
+  ```
+4. We need to register our classes in UnityConfig.cs class
+  ```
+
   ```
 
 We are now ready to test it. Run it locally from Visual Studio and run visit the following url in the browser: `http://localhost:52025/api?origin=MAD&destination=FRA`.  We should get back 2 fights.
+
+
+## <a name="deploy-dot-net-app"></a> Lab 4 - Retrieve flights thru a REST endpoint from a SQL database
+
+1. Add MySQL driver (https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework60.html)
+  `Install-Package MySql.Data.Entity`
+2. 
+
+### Add logging
+
+1. `Install-Package NLog.Config`
+
+### Access Mysql database managed by PCF
+
+There are 2 options:
+1) SSH tunneling + use mysql client: https://docs.pivotal.io/pivotalcf/1-11/devguide/deploy-apps/ssh-services.html
+2) Push a SQL mgmt app like this one: https://docs.pivotal.io/p-mysql/2-0/use.html#dev-tools
+
+We are going to use option 1).

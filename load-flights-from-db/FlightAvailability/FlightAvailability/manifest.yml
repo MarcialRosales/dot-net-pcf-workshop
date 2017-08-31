@@ -1,0 +1,6 @@
+﻿---
+applications:
+- name: flight-availability
+  host: mr-flight-availability
+  stack: windows2012R2
+  buildpack: hwc_buildpack
