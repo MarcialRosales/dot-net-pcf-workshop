@@ -1,0 +1,53 @@
+resources:
+  - name: application
+    type: git
+    source:
+      uri: https://github.com/MarcialRosales/dot-net-pcf-workshop
+      branch: master
+      paths: WebFormsApp
+
+jobs:
+- name: unit-test
+  public: true
+  plan:
+  - get: application
+    trigger: true
+  - task: build-and-test
+    config:
+      platform: windows
+      run:
+        path: powershell
+        args:
+        - ./build.ps1
+        - -mode test -targetFramework 4.6.1
+        dir: application/WebFormsApp
+      inputs:
+      - name: application
+
+- name: publish
+  public: true
+  plan:
+  - get: code
+    passed:
+    - unit-test
+    trigger: true
+
+  - task: build-and-publish
+    config:
+      platform: windows
+      run:
+        path: powershell
+        args:
+        - ./build.ps1
+        - -mode publish
+        dir: application/WebFormsApp
+      inputs:
+      - name: application
+#        path: ""
+      outputs:
+      - name: publish
+#        path: ""
+#  - put: pcf
+#    params:
+#      manifest: pipeline/dev/manifest.yml
+#      path: publish/Pivotal.Security.Entitlements
