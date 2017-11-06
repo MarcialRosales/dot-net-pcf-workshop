@@ -188,8 +188,8 @@ function Build-Solution($configuration) {
             $frameworkParam = "/p`:FrameworkPathOverride=`"$frameworkPath`""
         }
 
-  #      $app = "$MsBuildApp /m /v:normal /p`:Platform=$Architecture /p`:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
-        $app = "$MsBuildApp /m /v:normal $publish "
+        $app = "$MsBuildApp /m /v:normal /p`:Platform=$Architecture /p`:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
+  #      $app = "$MsBuildApp /m /v:normal $publish "
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
