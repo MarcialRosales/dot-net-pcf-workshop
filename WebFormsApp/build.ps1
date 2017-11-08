@@ -10,7 +10,7 @@ Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Micr
 Set-Variable -Option Constant -Name MsBuildApp           -Value "$DefaultFrameworkPath\MSBuild.exe"
 Set-Variable -Option Constant -Name XUnitVersion         -Value 2.1.0
 Set-Variable -Option Constant -Name XUnitApp             -Value "..\packages\xunit.runner.console.$XUnitVersion\tools\xunit.console"
-Set-Variable -Option Constant -Name NugetPath            -Value ./nuget.exe
+Set-Variable -Option Constant -Name NugetPath            -Value ../nuget.exe
 Set-Variable -Option Constant -Name PublisherVersion     -Value 14.0.0.3
 #Set-Variable -Option Constant -Name PublisherPath        -Value "'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\VisualStudio\v15.0'"
 Set-Variable -Option Constant -Name PublisherPath        -Value "..\packages\MSBuild.Microsoft.VisualStudio.Web.targets.$PublisherVersion\tools\VSToolsPath"
@@ -148,14 +148,14 @@ function Get-TargetFramework {
 	return $framework, $frameworkPath
 }
 
-function Install-NuGet() { 
+function Install-NuGet() {
     . {
 	    $uri = "dist.nuget.org/win-x86-commandline/latest/nuget.exe"
         Write-Host "Installing Nuget.exe" -ForegroundColor Green
             Invoke-WebRequest -Uri $uri  -Outfile nuget.exe | Write-Host
         Write-Host "nuget.exe installed successfully" -ForegroundColor Green
     } | Out-Null
-   
+
 }
 
 # Handles the installation of NuGet packages
@@ -205,10 +205,10 @@ function Build-Solution($configuration) {
     $code = -1
     . {
 
-	    
+
         Configure-Publish
         NuGet-Restore
-		
+
         $frameworkVer, $frameworkPath = Get-TargetFramework
 		$frameworkParam = ""
         if($frameworkVer -ne $DefaultFramework) {
@@ -216,7 +216,7 @@ function Build-Solution($configuration) {
         }
 
         $app = "& $MsBuildApp /m /v:normal /p:Platform=$Architecture /p:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
-  	
+
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
