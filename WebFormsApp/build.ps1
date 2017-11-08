@@ -6,15 +6,20 @@ Param (
 # These are the settings that could be messed with, but shouldn't be.
 Set-Variable -Option Constant -Name DefaultFramework     -Value "4.0.0.0"
 Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\"
+
 Set-Variable -Option Constant -Name MsBuildApp           -Value "$DefaultFrameworkPath\MSBuild.exe"
 Set-Variable -Option Constant -Name XUnitVersion         -Value 2.1.0
-Set-Variable -Option Constant -Name XUnitApp             -Value ".\packages\xunit.runner.console.$XUnitVersion\tools\xunit.console"
-Set-Variable -Option Constant -Name NugetPath            -Value .\.nuget\nuget.exe
+Set-Variable -Option Constant -Name XUnitApp             -Value "..\packages\xunit.runner.console.$XUnitVersion\tools\xunit.console"
+Set-Variable -Option Constant -Name NugetPath            -Value ./nuget.exe
 Set-Variable -Option Constant -Name PublisherVersion     -Value 14.0.0.3
+#Set-Variable -Option Constant -Name PublisherPath        -Value "'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\VisualStudio\v15.0'"
 Set-Variable -Option Constant -Name PublisherPath        -Value "..\packages\MSBuild.Microsoft.VisualStudio.Web.targets.$PublisherVersion\tools\VSToolsPath"
-Set-Variable -Option Constant -Name Architecture         -Value x64
-Set-Variable -Option Constant -Name PublishProfile       -Value CF
 
+
+Set-Variable -Option Constant -Name Architecture         -Value x64
+#Set-Variable -Option Constant -Name PublishProfile       -Value CF
+
+#Set-Variable -Option Constant -Name MsBuildApp           -Value "'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe'"
 
 # Write a nice banner for the peoples.
 function Write-Banner {
@@ -143,12 +148,30 @@ function Get-TargetFramework {
 	return $framework, $frameworkPath
 }
 
+function Install-NuGet() { 
+    . {
+	    $uri = "dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+        Write-Host "Installing Nuget.exe" -ForegroundColor Green
+            Invoke-WebRequest -Uri $uri  -Outfile nuget.exe | Write-Host
+        Write-Host "nuget.exe installed successfully" -ForegroundColor Green
+    } | Out-Null
+   
+}
+
 # Handles the installation of NuGet packages
 function NuGet-Install($package, $version) {
     . {
         Write-Host "Installing Nuget package $package, $version" -ForegroundColor Green
-            Invoke-Expression "$NugetPath install $package -outputdirectory .\packages -version $version" | Write-Host
+            Invoke-Expression "$NugetPath install $package -outputdirectory ..\packages -version $version" | Write-Host
         Write-Host "Package installed successfully" -ForegroundColor Green
+    } | Out-Null
+}
+
+function NuGet-Restore() {
+    . {
+        Write-Host "Restoring Nuget package dependencies" -ForegroundColor Green
+            Invoke-Expression "$NugetPath restore /PackagesDirectory  ..\packages " | Write-Host
+        Write-Host "Packages installed successfully" -ForegroundColor Green
     } | Out-Null
 }
 
@@ -174,22 +197,26 @@ function Configure-Publish {
     } | Out-Null
 }
 
+
+
 # Build the solution, return
 function Build-Solution($configuration) {
 
     $code = -1
     . {
 
+	    
         Configure-Publish
-
+        NuGet-Restore
+		
         $frameworkVer, $frameworkPath = Get-TargetFramework
 		$frameworkParam = ""
         if($frameworkVer -ne $DefaultFramework) {
             $frameworkParam = "/p`:FrameworkPathOverride=`"$frameworkPath`""
         }
 
-        $app = "$MsBuildApp /m /v:normal /p`:Platform=$Architecture /p`:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
-  #      $app = "$MsBuildApp /m /v:normal $publish "
+        $app = "& $MsBuildApp /m /v:normal /p:Platform=$Architecture /p:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
+  	
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
@@ -208,6 +235,7 @@ function Build-Solution($configuration) {
 # The main entry point for this application.
 function main {
     Write-Banner
+#    Install-NuGet
 
     $buildConfig = if ($(Get-Mode) -eq 'test') {'Test'} Else {'Release'}
     $buildResult = Build-Solution $buildConfig
@@ -254,3 +282,4 @@ function main {
 }
 
 main # Run the application.
+#Install-NuGet

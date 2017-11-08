@@ -4,9 +4,21 @@ resources:
     source:
       uri: https://github.com/MarcialRosales/dot-net-pcf-workshop
       branch: master
-      paths: WebFormsApp
+      paths:
+        - WebFormsApp
 
 jobs:
+- name: discover
+  public: true
+  plan:
+  - task: find-msbuild
+    config:
+      platform: windows
+      run:
+        path: powershell
+        args:
+        - dir '/Program Files'
+#        - dir /Windows/Microsoft.NET/Framework64/v4.0.30319
 - name: unit-test
   public: true
   plan:
@@ -18,8 +30,7 @@ jobs:
       run:
         path: powershell
         args:
-        - ./build.ps1
-        - -mode test -targetFramework 4.6.1
+        - ../build.ps1
         dir: application/WebFormsApp
       inputs:
       - name: application
@@ -27,7 +38,7 @@ jobs:
 - name: publish
   public: true
   plan:
-  - get: code
+  - get: application
     passed:
     - unit-test
     trigger: true
