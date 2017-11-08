@@ -215,7 +215,7 @@ function Build-Solution($configuration) {
             $frameworkParam = "/p`:FrameworkPathOverride=`"$frameworkPath`""
         }
 
-        Invoke-Expression "dir $PublisherPath/WebApplications"
+        Invoke-Expression "dir $PublisherPath"
 
         $app = "& $MsBuildApp /m /v:normal /p:Platform=$Architecture /p:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
 
