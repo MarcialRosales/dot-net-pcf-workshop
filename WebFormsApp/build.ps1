@@ -216,7 +216,7 @@ function Build-Solution($configuration) {
         }
 
         Write-Host "Listing folder $PublisherPath" -ForegroundColor Green
-        Invoke-Expression "dir $PublisherPath"
+        Invoke-Expression "dir ../packages"
 
         $app = "& $MsBuildApp /m /v:normal /p:Platform=$Architecture /p:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
 
