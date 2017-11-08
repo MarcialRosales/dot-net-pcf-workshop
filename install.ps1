@@ -2,4 +2,6 @@ Invoke-WebRequest https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-E
 
 choco install nuget.commandline -y
 
+get-command nuget.exe
+
 nuget.exe
