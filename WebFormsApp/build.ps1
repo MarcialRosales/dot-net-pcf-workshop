@@ -13,7 +13,7 @@ Set-Variable -Option Constant -Name XUnitApp             -Value "..\packages\xun
 Set-Variable -Option Constant -Name NugetPath            -Value ../nuget.exe
 Set-Variable -Option Constant -Name PublisherVersion     -Value 14.0.0.3
 #Set-Variable -Option Constant -Name PublisherPath        -Value "'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\VisualStudio\v15.0'"
-Set-Variable -Option Constant -Name PublisherPath        -Value "..\packages\MSBuild.Microsoft.VisualStudio.Web.targets.$PublisherVersion\tools\VSToolsPath"
+Set-Variable -Option Constant -Name PublisherPath        -Value "..\packages\Web.targets.$PublisherVersion\tools"
 
 
 Set-Variable -Option Constant -Name Architecture         -Value x64

@@ -31,9 +31,10 @@ jobs:
         path: powershell
         args:
         - ../build.ps1
-        dir: application/WebFormsApp
+        dir: a/WebFormsApp/WebFormsApp
       inputs:
       - name: application
+        path: a
 
 - name: publish
   public: true
