@@ -216,7 +216,7 @@ function Build-Solution($configuration) {
         }
 
         Write-Host "Listing folder ..\packages" -ForegroundColor Green
-        Invoke-Expression "dir ..\packages" | Write-Host
+        Invoke-Expression "dir ..\packages\MSBuild.Microsoft.VisualStudio.Web.targets.14.0.0.3" | Write-Host
 
         $app = "& $MsBuildApp /m /v:normal /p:Platform=$Architecture /p:Configuration=$configuration /nr:false $publish $tools $frameworkParam"
 
