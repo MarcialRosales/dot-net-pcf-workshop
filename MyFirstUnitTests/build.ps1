@@ -82,7 +82,9 @@ function Build-Solution($configuration) {
     . {
         NuGet-Restore
 
-        $app = "$MsBuildApp /m /v:normal /p:Configuration=`$configuration /p:Platform=x86 /nr:false "
+        Write-Host "Running the build script with configuration: $configuration"
+
+        $app = "$MsBuildApp /m /v:normal /p:Configuration=$configuration /p:Platform=x86 /nr:false "
 
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
