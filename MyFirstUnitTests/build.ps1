@@ -84,7 +84,7 @@ function Build-Solution($configuration) {
         NuGet-Restore
 
 
-        $app = "$MsBuildApp /m /v:normal  /nr:false /p:TargetFrameworkMoniker='.NETFramework,Version=v4.0' "
+        $app = "$MsBuildApp /m /v:normal  /nr:false /p:TargetFrameworkMoniker='.NETFramework,Version=v4.7' "
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
