@@ -78,11 +78,9 @@ function NuGet-Restore() {
 # Build the solution, return
 function Build-Solution($configuration) {
 
-    NuGet-Restore
-    dir ./packages
-
     $code = -1
     . {
+        NuGet-Restore
 
         $app = "$MsBuildApp /m /v:normal  /nr:false "
 
@@ -118,11 +116,7 @@ function Get-Mode {
 function main {
     Write-Banner
 
-
-    NuGet-Restore
-    dir ./packages
-
-    # $buildResult = Build-Solution $buildConfig
+    $buildResult = Build-Solution $buildConfig
 
     if($buildResult -ne 0) {
         Write-Host "Build failed, aborting..." -ForegroundColor Red
