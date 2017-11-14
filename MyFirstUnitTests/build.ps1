@@ -78,11 +78,11 @@ function NuGet-Restore() {
 # Build the solution, return
 function Build-Solution($configuration) {
 
+    NuGet-Restore
+    dir ./packages
+
     $code = -1
     . {
-
-        NuGet-Restore
-        dir ./packages
 
         $app = "$MsBuildApp /m /v:normal  /nr:false  "
         Write-Host "Running the build script: $app" -ForegroundColor Green
