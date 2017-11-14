@@ -1,3 +1,6 @@
+Param (
+    [string] $mode
+)
 
 # These are the settings that could be messed with, but shouldn't be.
 Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\"
@@ -37,8 +40,11 @@ function Write-Banner {
           '.____'.____.'____.'
           '.________________.'" -ForegroundColor Green
 
-          Detect-Frameworks
+         Detect-Frameworks
 
+		 Write-Host "
+          Mode:    $(Get-Mode)`n" -ForegroundColor Gray
+		
     } | Out-Null
 }
 
@@ -93,27 +99,39 @@ function Build-Solution($configuration) {
     $code
 }
 
+# Get the current mode
+function Get-Mode {
+    . {
+        if ($mode -eq '') {
+            $mode = 'build'
+        }
+
+    } | Out-Null
+
+    return $mode
+}
+
 # The main entry point for this application.
 function main {
     Write-Banner
 
-    $buildConfig = if ($(Get-Mode) -eq 'test') {'Test'} Else {'Release'}
     $buildResult = Build-Solution $buildConfig
     
     if($buildResult -ne 0) {
         Write-Host "Build failed, aborting..." -ForegroundColor Red
         Exit $buildResult
     } 
+	
+	
 
     if($(Get-Mode) -eq 'test') {
         Write-Host "Starting unit test execution" -ForegroundColor Green
-        NuGet-Install 'xunit.runner.console' $XUnitVersion
         
         $failedUnitTests = 0
         
         #Get the matching test assemblies, ensure only bin and the target architecture are selected
         $testfiles = Get-ChildItem . -recurse  | where {$_.BaseName.EndsWith("Tests") -and $_.Extension -eq ".dll" `
-            -and $_.FullName -match "\\bin\\" -and $_.FullName -match "$Architecture"  }
+            -and $_.FullName -match "\\bin\\"  }
 
         #Execute unit tests in all assemblies, continue even in case of error, as it provides more context
         foreach($UnitTestDll in $testfiles) {
