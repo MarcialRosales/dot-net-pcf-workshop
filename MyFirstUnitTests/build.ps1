@@ -82,9 +82,10 @@ function Build-Solution($configuration) {
     . {
 
         NuGet-Restore
+        NuGet-Install 'xunit.runner.console' $XUnitVersion
+        NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion 
 
-
-        $app = "$MsBuildApp /m /v:normal  /nr:false /p:TargetFrameworkMoniker='.NETFramework,Version=v4.7' "
+        $app = "$MsBuildApp /m /v:normal  /nr:false  "
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
