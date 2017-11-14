@@ -83,7 +83,8 @@ function Build-Solution($configuration) {
 
         NuGet-Restore
         NuGet-Install 'xunit.runner.console' $XUnitVersion
-        NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion 
+        NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion
+        NuGet-Install 'xunit.core.props' $XUnitVersion
 
         $app = "$MsBuildApp /m /v:normal  /nr:false  "
         Write-Host "Running the build script: $app" -ForegroundColor Green
