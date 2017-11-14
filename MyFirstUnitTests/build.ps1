@@ -61,7 +61,7 @@ function Detect-Frameworks {
 function NuGet-Install($package, $version) {
     . {
         Write-Host "Installing Nuget package $package, $version" -ForegroundColor Green
-            Invoke-Expression "$NugetPath install $package -outputdirectory ..\packages -version $version" | Write-Host
+            Invoke-Expression "$NugetPath install $package -outputdirectory .\packages -version $version" | Write-Host
         Write-Host "Package installed successfully" -ForegroundColor Green
     } | Out-Null
 }
@@ -69,7 +69,7 @@ function NuGet-Install($package, $version) {
 function NuGet-Restore() {
     . {
         Write-Host "Restoring Nuget package dependencies" -ForegroundColor Green
-            Invoke-Expression "$NugetPath restore /PackagesDirectory  ..\packages " | Write-Host
+            Invoke-Expression "$NugetPath restore /PackagesDirectory  .\packages " | Write-Host
         Write-Host "Packages installed successfully" -ForegroundColor Green
     } | Out-Null
 }
@@ -81,9 +81,9 @@ function Build-Solution($configuration) {
     $code = -1
     . {
 
-        NuGet-Restore
-        NuGet-Install 'xunit.runner.console' $XUnitVersion
-        NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion
+#        NuGet-Restore
+#        NuGet-Install 'xunit.runner.console' $XUnitVersion
+#        NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion
 
         $app = "$MsBuildApp /m /v:normal  /nr:false  "
         Write-Host "Running the build script: $app" -ForegroundColor Green
