@@ -46,7 +46,7 @@ function Write-Banner {
 
     } | Out-Null
 
-
+    Detect-Frameworks
 }
 
 
@@ -162,4 +162,4 @@ function main {
 
 }
 
-main # Run the application.ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼￿￿￿￿￿￿￿￿￿￿￿￿﷽�﷽�ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼ﳼ￼
+main # Run the application.
