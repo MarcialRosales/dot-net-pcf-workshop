@@ -116,13 +116,13 @@ function Get-Mode {
 function main {
     Write-Banner
 
+    $buildConfig = if ($(Get-Mode) -eq 'test') {'Test'} Else {'Release'}
     $buildResult = Build-Solution $buildConfig
 
     if($buildResult -ne 0) {
         Write-Host "Build failed, aborting..." -ForegroundColor Red
         Exit $buildResult
     }
-
 
 
     if($(Get-Mode) -eq 'test') {
