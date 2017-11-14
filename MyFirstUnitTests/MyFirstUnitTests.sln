@@ -9,14 +9,17 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Debug|AMD64 = Debug|AMD64
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|x64.Build.0 = Debug|Any CPU
+		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|x64.ActiveCfg = Debug|x86
+		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|x64.Build.0 = Debug|x86
+		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|AMD64.ActiveCfg = Debug|AMD64
+		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Debug|AMD64.Build.0 = Debug|AMD64
 		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Release|Any CPU.ActiveCfg = Debug|x64
 		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Release|Any CPU.Build.0 = Debug|x64
 		{7CFA28E5-1F73-43EE-BC7C-18C1793D8ADD}.Release|x64.ActiveCfg = Release|x64
