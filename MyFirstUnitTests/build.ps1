@@ -46,7 +46,7 @@ function Write-Banner {
 
     } | Out-Null
 
-    Detect-Frameworks
+
 }
 
 
@@ -69,7 +69,7 @@ function NuGet-Install($package, $version) {
 function NuGet-Restore() {
     . {
         Write-Host "Restoring Nuget package dependencies" -ForegroundColor Green
-            Invoke-Expression "$NugetPath restore /PackagesDirectory  .\packages " | Write-Host
+            Invoke-Expression "$NugetPath restore -PackagesDirectory .\packages " | Write-Host
         Write-Host "Packages installed successfully" -ForegroundColor Green
     } | Out-Null
 }
@@ -84,10 +84,12 @@ function Build-Solution($configuration) {
     $code = -1
     . {
 
-        $app = "$MsBuildApp /m /v:normal  /nr:false  "
+        $app = "$MsBuildApp /m /v:normal  /nr:false "
+
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
         $code = $LastExitCode
+
     } | Out-Null
 
     if($code -ne 0) {
@@ -116,7 +118,11 @@ function Get-Mode {
 function main {
     Write-Banner
 
-    $buildResult = Build-Solution $buildConfig
+
+    NuGet-Restore
+    dir ./packages
+
+    # $buildResult = Build-Solution $buildConfig
 
     if($buildResult -ne 0) {
         Write-Host "Build failed, aborting..." -ForegroundColor Red
