@@ -42,7 +42,7 @@ function Write-Banner {
 
 
 		 Write-Host "
-          MSBuildToolsPath: $MSBuildToolsPath
+          MSBuildToolsPath: $(MSBuildToolsPath)
           Mode:    $(Get-Mode)`n" -ForegroundColor Gray
 
     } | Out-Null
