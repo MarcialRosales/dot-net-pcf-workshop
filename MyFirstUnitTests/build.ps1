@@ -61,7 +61,7 @@ function Detect-Frameworks {
 function NuGet-Install($package, $version) {
     . {
         Write-Host "Installing Nuget package $package, $version" -ForegroundColor Green
-            Invoke-Expression "$NugetPath install $package -outputdirectory .\packages -version $version" | Write-Host
+            Invoke-Expression "$NugetPath install $package -outputdirectory ..\packages -version $version" | Write-Host
         Write-Host "Package installed successfully" -ForegroundColor Green
     } | Out-Null
 }
@@ -84,7 +84,6 @@ function Build-Solution($configuration) {
         NuGet-Restore
         NuGet-Install 'xunit.runner.console' $XUnitVersion
         NuGet-Install 'xunit.runner.visualstudio' $XUnitVersion
-        NuGet-Install 'xunit.core.props' $XUnitVersion
 
         $app = "$MsBuildApp /m /v:normal  /nr:false  "
         Write-Host "Running the build script: $app" -ForegroundColor Green
