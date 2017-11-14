@@ -1,0 +1,27 @@
+resources:
+  - name: application
+    type: git
+    source:
+      uri: https://github.com/MarcialRosales/dot-net-pcf-workshop
+      branch: master
+      paths:
+        - MyFirstUnitTests
+
+jobs:
+
+- name: unit-test
+  public: true
+  plan:
+  - get: application
+    trigger: true
+  - task: build-and-test
+    config:
+      platform: windows
+      run:
+        path: powershell
+        args:
+        - build.ps1
+        dir: a/MyFirstUnitTests
+      inputs:
+      - name: application
+        path: a
