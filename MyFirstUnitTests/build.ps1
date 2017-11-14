@@ -118,7 +118,7 @@ function Get-Mode {
 function main {
     Write-Banner
 
-    $buildConfig = if ($(Get-Mode) -eq 'test') {'Test'} Else {'Release'}
+    $buildConfig = if ($(Get-Mode) -eq 'test') {'Debug'} Else {'Release'}
     $buildResult = Build-Solution $buildConfig
 
     if($buildResult -ne 0) {
