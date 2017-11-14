@@ -2,6 +2,9 @@ Invoke-WebRequest https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-E
 
 choco install nuget.commandline -y
 
-get-command nuget.exe
+Write-Host "listing chocolatey packages" -ForegroundColor Green
+choco list -li
 
-nuget.exe
+Write-Host "getting where nuget.exe" -ForegroundColor Green
+get-command NuGet.exe
+
