@@ -9,8 +9,8 @@ Set-Variable -Option Constant -Name MsBuildApp           -Value "$DefaultFramewo
 Set-Variable -Option Constant -Name XUnitVersion         -Value 2.3.1
 Set-Variable -Option Constant -Name XUnitApp             -Value ".\packages\xunit.runner.console.$XUnitVersion\tools\net452\xunit.console.exe"
 Set-Variable -Option Constant -Name NugetPath            -Value .\.nuget\nuget.exe
-Set-Variable -Option Constant -Name Architecture         -Value "'Any CPU'"
-
+#Set-Variable -Option Constant -Name Architecture         -Value "'Any CPU'"
+Set-Variable -Option Constant -Name Architecture         -Value x64
 
 # Write a nice banner for the peoples.
 function Write-Banner {
@@ -82,7 +82,7 @@ function Build-Solution($configuration) {
     . {
         NuGet-Restore
 
-        $app = "$MsBuildApp /m /v:normal  /nr:false "
+        $app = "$MsBuildApp /m /v:normal /p`:Platform=$Architecture /nr:false "
 
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
