@@ -40,7 +40,8 @@ function Write-Banner {
           '.____'.____.'____.'
           '.________________.'" -ForegroundColor Green
 
-         Detect-Frameworks
+    Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -recurse |
+        				Get-ItemProperty -name Version,Release,InstallPath -EA 0
 
 		 Write-Host "
           Mode:    $(Get-Mode)`n" -ForegroundColor Gray
