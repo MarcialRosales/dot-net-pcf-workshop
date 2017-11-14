@@ -17,15 +17,15 @@ function Write-Banner {
     . {
         Clear-Host
         Write-Host "
-                                                              
-     ______       _ _     _  ______                            
-     | ___ \     (_) |   | | | ___ \                           
-     | |_/ /_   _ _| | __| | | |_/ / __ ___   ___ ___  ___ ___ 
+
+     ______       _ _     _  ______
+     | ___ \     (_) |   | | | ___ \
+     | |_/ /_   _ _| | __| | | |_/ / __ ___   ___ ___  ___ ___
      | ___ \ | | | | |/ _`` | |  __/ '__/ _ \ / __/ _ \/ __/ __|
      | |_/ / |_| | | | (_| | | |  | | | (_) | (_|  __/\__ \__ \
      \____/ \__,_|_|_|\__,_| \_|  |_|  \___/ \___\___||___/___/`n" -ForegroundColor Gray
 
-        Write-Host " 
+        Write-Host "
                .--------.
               / .------. \
              / /        \ \
@@ -44,15 +44,15 @@ function Write-Banner {
 
 		 Write-Host "
           Mode:    $(Get-Mode)`n" -ForegroundColor Gray
-		
+
     } | Out-Null
 }
 
 
 # Detect the frameworks.
 function Detect-Frameworks {
-	$frameworks = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -recurse |
-				Get-ItemProperty -name Version,Release,InstallPath -EA 0 
+	Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -recurse |
+				Get-ItemProperty -name Version,Release,InstallPath -EA 0
 
 }
 
@@ -74,12 +74,12 @@ function NuGet-Restore() {
 }
 
 
-# Build the solution, return 
+# Build the solution, return
 function Build-Solution($configuration) {
 
     $code = -1
     . {
-        
+
         NuGet-Restore
 
 
@@ -116,19 +116,19 @@ function main {
     Write-Banner
 
     $buildResult = Build-Solution $buildConfig
-    
+
     if($buildResult -ne 0) {
         Write-Host "Build failed, aborting..." -ForegroundColor Red
         Exit $buildResult
-    } 
-	
-	
+    }
+
+
 
     if($(Get-Mode) -eq 'test') {
         Write-Host "Starting unit test execution" -ForegroundColor Green
-        
+
         $failedUnitTests = 0
-        
+
         #Get the matching test assemblies, ensure only bin and the target architecture are selected
         $testfiles = Get-ChildItem . -recurse  | where {$_.BaseName.EndsWith("Tests") -and $_.Extension -eq ".dll" `
             -and $_.FullName -match "\\bin\\"  }
@@ -141,7 +141,7 @@ function main {
             if( $LastExitCode -ne 0){
                 $failedUnitTests++
                 Write-Host "One or more tests in assembly FAILED" -ForegroundColor Red
-            } 
+            }
             else
             {
                 Write-Host "All tests in assembly passed" -ForegroundColor Green
@@ -150,12 +150,12 @@ function main {
 
         if($failedUnitTests -ne 0) {
             Write-Host "Unit testing for $(Get-Mode) configuration FAILED." -ForegroundColor Red
-            
+
         } else {
             Write-Host "Unit testing for $(Get-Mode) configuration completed successfully." -ForegroundColor Green
         }
         Exit $failedUnitTests
-    } 
+    }
 
 }
 

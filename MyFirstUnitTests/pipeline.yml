@@ -20,7 +20,7 @@ jobs:
       run:
         path: powershell
         args:
-        - build.ps1
+        - ./build.ps1
         dir: a/MyFirstUnitTests
       inputs:
       - name: application
