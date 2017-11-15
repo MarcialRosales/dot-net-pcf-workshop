@@ -6,6 +6,10 @@ function Unzip
     [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
 }
 
+[System.Runtime.InteropServices.RuntimeEnvironment]::GetSystemVersion()
+$env:computername
+
+
 Write-Host "`nCreating assemblies folder ...`n" -ForegroundColor Gray
 New-Item -ItemType Directory -path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework"
 
