@@ -87,7 +87,11 @@ function Build-Solution($configuration) {
 
         Write-Host "Running the build script with configuration: $configuration"
 
+<<<<<<< HEAD
         $app = "$MsBuildApp /m /v:normal /p:Configuration=$configuration /p:Platform='Any CPU' /nr:false"
+=======
+        $app = "$MsBuildApp /m /v:normal /p:Configuration=$configuration /p:Platform='Any CPU' /nr:false /tv:14.0"
+>>>>>>> f0ad6bd97495f2c8c6b4c31df135e5515d174528
 
         Write-Host "Running the build script: $app" -ForegroundColor Green
         Invoke-Expression "$app" | Write-Host
