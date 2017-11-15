@@ -4,8 +4,7 @@ Param (
 
 # These are the settings that could be messed with, but shouldn't be.
 #Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\"
-Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Microsoft.Net\Assembly\GAC_64\MSBuild\v4.0_4.0.0.0__b
-    03f5f7f11d50a3a"
+Set-Variable -Option Constant -Name DefaultFrameworkPath -Value "C:\Windows\Microsoft.Net\Assembly\GAC_64\MSBuild\v4.0_4.0.0.0__b03f5f7f11d50a3a"
 Set-Variable -Option Constant -Name MsBuildApp           -Value "$DefaultFrameworkPath\MSBuild.exe"
 
 Set-Variable -Option Constant -Name XUnitVersion         -Value 2.3.1
@@ -48,8 +47,8 @@ function Write-Banner {
 
     } | Out-Null
 
-    get-command NuGet.exe
-    
+    get-command msbuild.exe
+
     Detect-Frameworks
 }
 
