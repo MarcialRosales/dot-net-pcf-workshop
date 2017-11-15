@@ -44,7 +44,7 @@ namespace MyFirstUnitTests
             public AddNumbers(ITestOutputHelper output, ComplexFixture fixture)
             {
                 this.output = output;
-                output.WriteLine($"fixture: {fixture}");
+                output.WriteLine("fixture: {fixture}", fixture);
                 class1 = new Class1();
             }
         }
