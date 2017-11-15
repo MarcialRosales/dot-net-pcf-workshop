@@ -9,22 +9,22 @@ using Xunit.Abstractions;
 using Xunit;
 
 // XUnit features:
-//- ** Simple to use**: It just needs one attribute `[Fact]`. 
+//- ** Simple to use**: It just needs one attribute `[Fact]`.
 //- ** Single object instance per test method**: It allows complete isolation of test methods that allow developers to independently run tests in any order.
 // - **No Support for ExpectedException attribute**: The best way is that the developers handle these expected exceptions within the test method itself.
 
-namespace MyFirstUnitTests 
+namespace MyFirstUnitTests
 {
-    // Trick: Structure Scenearios using "test class as context" pattern. 
+    // Trick: Structure Scenearios using "test class as context" pattern.
     // AddNumbers and SubstractNumbers are scenarios with their tests and their own setup/tearDown
-    public class Class1Test 
+    public class Class1Test
     {
 
         // Trick: We want to avoid "Class Fixtures" because test should be independent from each other
-        // MAybe for complex end-to-end tests we can share the context, e.g. the session id. 
-        // When using a class fixture, xUnit.net will ensure that the fixture instance will be created 
+        // MAybe for complex end-to-end tests we can share the context, e.g. the session id.
+        // When using a class fixture, xUnit.net will ensure that the fixture instance will be created
         // before any of the tests have run, and once all the tests have finished, it will clean up the fixture object by calling Dispose, if present.
-        // 1. create ComplexFixture class 
+        // 1. create ComplexFixture class
         // 2. extend our test class with IClassFixture<OurTestFixture>
         // 3. Add constructor which takes IClassFixture<OurTestFixture>
         public class AddNumbers : IClassFixture<ComplexFixture>
@@ -46,7 +46,7 @@ namespace MyFirstUnitTests
                 this.output = output;
                 output.WriteLine($"fixture: {fixture}");
                 class1 = new Class1();
-           
+            }
         }
 
         public class SubstractNumbers
@@ -79,7 +79,7 @@ namespace MyFirstUnitTests
             // ... clean up ...
         }
 
-        // Provide getter 
+        // Provide getter
         // public SomeClass someClass { get; private set; }
     }
 }
