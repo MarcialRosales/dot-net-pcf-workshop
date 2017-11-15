@@ -142,7 +142,7 @@ function main {
         #Execute unit tests in all assemblies, continue even in case of error, as it provides more context
         foreach($UnitTestDll in $testfiles) {
             Write-Host "Found Test: $($UnitTestDll.FullName)" -ForegroundColor Yellow
-            Invoke-Expression "$XUnitApp $($UnitTestDll.FullName) -reporter verbose"
+            Invoke-Expression "$XUnitApp $($UnitTestDll.FullName) -verbose"
 
             if( $LastExitCode -ne 0){
                 $failedUnitTests++
