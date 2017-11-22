@@ -31,7 +31,7 @@ namespace MyFirstUnitTests
         // 3. Add constructor which takes IClassFixture<OurTestFixture>
         public class AddNumbers : IClassFixture<ComplexFixture>
         {
-            Calculator class1;
+            private Calculator calculator;
             ITestOutputHelper output;
 
 
@@ -41,12 +41,12 @@ namespace MyFirstUnitTests
             public void SameNumbers()
             {
                 // given
-                class1.Should().NotBeNull();
+                calculator.Should().NotBeNull();
 
                 // when
                 output.WriteLine("Same numbers");
                 // when
-                class1.Add(2, 2).ShouldBeEquivalentTo(4);  // Assert.Equal(4, class1.Add(2, 2));
+                calculator.Add(2, 2).ShouldBeEquivalentTo(4);  // Assert.Equal(4, calculator.Add(2, 2));
                 
             }
             
@@ -71,7 +71,7 @@ namespace MyFirstUnitTests
             public AddNumbers(ITestOutputHelper output, ComplexFixture fixture)
             {
                 this.output = output;
-                class1 = new Calculator();
+                calculator = new Calculator();
             }
         }
 
