@@ -55,20 +55,61 @@ namespace MyFirstUnitTests
         [Fact]
         public void searchResultPageTitleShouldContainTheSearchCriteria()
         {
-            // when we go to google search box
-            _driver.Navigate().GoToUrl("https://github.com/MarcialRosales");
+            var home = new HomePage(_driver)
+                .Go()
+                .search("concourse")
+                .title.Should().Be("Search · concourse · GitHub");
             
-            // and search for "concourse"
-            var criteria = "concourse";
-            var search = _driver.FindElement(By.CssSelector("input[name=q]"));
-            search.Displayed.Should().BeTrue();
+        }
 
-            search.SendKeys(criteria);
-            search.SendKeys(Keys.Enter);
-           
-            // we should get a results page titled with our search criteria
-            _driver.Title.Should().Be("Search · concourse · GitHub");
+        abstract class BasePage
+        {
+            protected IWebDriver _driver;
+
+            public BasePage(IWebDriver webDriver)
+            {
+                _driver = webDriver;
+
+            }
+
+            public String title
+            {
+                get { return _driver.Title; }
+                set { }
+            }
             
+        }
+        class SearchResultPage : BasePage
+        {
+            public SearchResultPage(IWebDriver webDriver) : base(webDriver)
+            {
+            }
+        }
+        class HomePage : BasePage
+        {
+            public HomePage(IWebDriver webDriver) : base(webDriver)
+            { 
+            }
+            public HomePage Go()               
+            {
+                _driver.Navigate().GoToUrl("https://github.com/MarcialRosales");
+                return this;
+            }
+            public SearchResultPage search(String criteria)
+            {
+                typeCriteria(criteria);
+                return new SearchResultPage(_driver);
+            }
+
+            private HomePage typeCriteria(String criteria)
+            {
+                var search = _driver.FindElement(By.CssSelector("input[name=q]"));
+                search.Displayed.Should().BeTrue();
+                search.SendKeys(criteria);
+                search.SendKeys(Keys.Enter);
+
+                return this;
+            }
         }
     }
 
